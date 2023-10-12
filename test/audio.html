@@ -1,0 +1,272 @@
+<!-- HTML document that allow upload file fbx only -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Mp3</title>
+
+    <!-- Font -->
+
+    <!-- CDN -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!-- CSS -->
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body * {
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 800px;
+            margin: 0 auto;
+
+        }
+
+        form {
+            width: 100%;
+            padding: 10px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            margin: 0 auto 10px;
+            display: flex;
+
+        }
+
+        /* input file like dnd style */
+
+        form input[type="file"] {
+            display: none;
+        }
+
+        form label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 70px;
+            padding: 10px;
+            text-align: center;
+            color: #aaa;
+            background: #fff;
+            border: 1px solid #aaa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-style: dashed;
+            font-size: 12px;
+        }
+
+        form label:hover {
+            background: #eee;
+            color: #666;
+            border-style: solid;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        /* Canvas */
+
+        canvas {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #eee;
+            background: #f8f8f8;
+            border-radius: 12px;
+        }
+
+        audio {
+            display: none;
+        }
+
+        .fastflow {
+            width: 100%;
+            height: 50px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .fastflow_detect {
+            position: absolute;
+            z-index: 30;
+            right: calc(50% + 20px);
+            padding: 10px 30px 10px 10px;
+            color: #111;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .fastflow_detect:before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: 50%;
+            right: 55px;
+            width: 70px;
+            height: 70px;
+            border-radius: 100px;
+            background: #eee;
+            transform: translateY(-50%);
+        }
+
+        .fastflow_detect.active:before {
+            background: #f00;
+        }
+
+        .fastflow_avg {
+            color: #000;
+            position: absolute;
+            left: calc(50% + 10px);
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <form action="upload.php" method="post" enctype="multipart/form-data">
+            <input type="file" name="fileToUpload" id="fileToUpload" accept=".mp3">
+            <label for="fileToUpload">Upload .mp3 file</label>
+        </form>
+    
+        <!-- Canvas -->
+        <div id="canvas-container">
+            <canvas id="canvas" width="800" height="200"></canvas>
+        </div>
+
+        <!-- Fast flow detect -->
+
+        <div class="fastflow">
+            <span class="fastflow_detect">
+                Fast flow detect
+            </span>
+            <span class="fastflow_avg">
+                Average: 0
+            </span>
+        </div>
+
+    </div>
+</body>
+
+<!-- Script -->
+<!-- CDNs -->
+<!-- <script type="importmap">
+    {
+        "imports": {
+            "three": "./node_modules/three/build/three.module.js"
+        }
+    }
+</script> -->
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+    const canvas = document.getElementById('canvas');
+
+// Get mp3 file from #fileToUpload, then analyse it
+$(document).ready(function(){
+    $("#fileToUpload").change(function(){
+        var file = this.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e){
+            var arrayBuffer = e.target.result;
+            var buffer = new Uint8Array(arrayBuffer);
+            var blob = new Blob([buffer], {type: "audio/mp3"});
+            var url = URL.createObjectURL(blob);
+
+            // Create audio element
+            var audio = document.createElement("audio");
+            audio.src = url;
+            audio.controls = true;
+            audio.autoplay = true;
+            document.body.appendChild(audio);
+            
+            // Analyse mp3 file
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var analyser = audioCtx.createAnalyser();
+            var source = audioCtx.createMediaElementSource(audio);
+
+            var listener = audioCtx.createGain();
+
+            source.connect(listener);
+            listener.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            // draw analyser to canvas
+            drawToCanvas(canvas, audioCtx, analyser);
+
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+
+
+});
+
+const drawToCanvas = function(canvas = canvas, audioCtx = audioCtx, analyser = analyser) {
+    const ctx = canvas.getContext('2d');
+    const WIDTH = canvas.width;
+    const HEIGHT = canvas.height;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    const barWidth = (WIDTH / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+    let lastAverage = 0;
+
+    console.log(bufferLength);
+    console.log(dataArray);
+
+    function renderFrame() {
+        requestAnimationFrame(renderFrame);
+        x = 0;
+        analyser.getByteFrequencyData(dataArray);
+        // console.log(dataArray[500]);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+        }
+        let avg = sum / bufferLength;
+        // console.log(avg);
+        // if (avg > lastAverage * 1.2) {
+        if (avg > 70) {
+            $('.fastflow_detect').addClass('active');
+            $('.fastflow_avg').text('Average: ' + avg);
+        } else {
+            $('.fastflow_detect').removeClass('active');
+            $('.fastflow_avg').text('Average: ' + avg);
+        }
+        lastAverage = avg;
+
+
+        for (let i = 0; i < bufferLength; i++) {
+            barHeight = dataArray[i];
+            let r = barHeight + (25 * (i/bufferLength));
+            let g = 250 * (i/bufferLength);
+            let b = 50;
+            ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+            ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+            x += barWidth + 1;
+        }
+    }
+    renderFrame();
+};
+
+
+</script>
+</html>
