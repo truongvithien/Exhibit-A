@@ -267,6 +267,7 @@ const drawToCanvas = function(canvas = canvas, audioCtx = audioCtx, analyser = a
     renderFrame();
 };
 
+document.addEventListener('touchend', ()=>window.audioContext.resume());
 
 </script>
 </html>
