@@ -1,0 +1,81 @@
+{
+    "outputName": "demo_1",
+    "characters": {
+        "index": ["char_1"],
+        "data": {
+            "char_1": {
+                "name": "char_1",
+                "modelSrc": "./resource/models/Betakkuma_MoveAI_Rig_ZUp_Col_v18.fbx",
+                "mocapSrc": "./resource/mocaps/Slavik_1_Male.fbx",
+                "position": {
+                    "x": "0"
+                },
+                "modelColor": "#000000",
+                "customMaterial": {
+                    "enable": "true",
+                    "colorMapSrc": "./input/ColorMap_LV_1.jpg",
+                    "blurMapSrc": "./input/Betakkuma_MaskBlur.png",
+                    "blurIntensity": "10",
+                    "addonTextures": [
+                        "./input/Betakkuma_Layer1.png"
+                    ],
+                    "mapTiling": "3",
+                    "logoTexture": "./input/Logo_LV.png",
+                    "logoSize": "100",
+                    "emissiveColor": "0",
+                    "emissiveIntensity": "1",
+                    "emissiveMapSrc": "",
+                    "envMapSrc": "",
+                    "envMapIntensity": "1",
+                    "aoMapSrc": "",
+                    "aoMapIntensity": "1",
+                    "normalMapSrc": "",
+                    "normalMapTiling": "1",
+                    "normalMapIntensity": "1",
+                    "metalnessMapSrc": "",
+                    "roughnessMapSrc": "",
+                    "displacementMapSrc": "",
+                    "displacementMapScale": "0.5",
+                    "shininess": "1",
+                    "reflectivity": "1"
+                }
+            }
+        }
+    },
+    "options": {
+        "background": {
+            "color": "#ffd4cc"
+        },
+        "fps": "30",
+        "resolution": {
+            "width": "2048",
+            "height": "2048"
+        },
+        "ambientLight": {
+            "color": "#ffffff",
+            "intensity": "1.5"
+        },
+        "light": {
+            "enable": "true",
+            "color": "#ffffff"
+        },
+        "fog": {
+            "enable": "true",
+            "color": "#000000",
+            "near": "0",
+            "far": "5000"
+        },
+        "colorsDefinedByMeshName": {
+            "enable": "true",
+            "index": ["white", "black", "red", "green", "blue", "gray"],
+            "data": {
+                "white": "#ffffff",
+                "black": "#000000",
+                "red": "#ff0000",
+                "green": "#00ff00",
+                "blue": "#0000ff",
+                "gray": "#dddddd"
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Provenance AI: Render</title>
+    <style>
+      #support {
+        position: fixed; right: 0; top: 0; width: 200px;
+        background: #eee;
+      }
+      #support > .canvas_wrapper {
+        position: relative;
+        width: 200px; height: 200px;
+        border: 1px solid #000;
+      }
+      #support > .canvas_wrapper::after {
+        content: attr(data-name);
+        position: absolute; left: 0; top: 0; padding: 5px;
+        font-size: 12px; color: #fff;
+        font-family: "Arial";
+        font-weight: bold;
+        background: rgba(0,0,0,0.5);
+      }
+      #support > .canvas_wrapper > canvas {
+        position: absolute; left: 0; top: 0;
+        width: 100%; height: 100%; object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Import map -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/scene/scripts/threed/three/build/three.module.js",
+          "three/addons/": "/scene/scripts/threed/three/examples/",
+          "three/examples/": "/scene/scripts/threed/three/examples/"
+        }
+      }
+    </script>
+    <!-- Global rendering job data -->
+    <script>
+      var renderSession = {};
+    </script>
+    <!-- Main script -->
+    <script type="module" src="./scripts/index.js" ></script>
+    <!-- Dom generated -->
+    <div id="support"></div>
+  </body>
+</html>
